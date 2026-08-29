@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DATA HUNTER - Misi Menaklukkan Dunia Data</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#0b132b',
+              navy: '#1c2541',
+              cyan: '#00f5d4',
+              blue: '#3a86ff',
+              purple: '#7b2cbf',
+              accent: '#ff007f',
+              gold: '#ffb703'
+            }
+          },
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+            display: ['Montserrat', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #0b132b;
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, .font-heading {
+      font-family: 'Montserrat', sans-serif;
+    }
+    .glass-card {
+      background: rgba(28, 37, 65, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 245, 212, 0.2);
+    }
+    .glass-card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0, 245, 212, 0.6);
+      box-shadow: 0 10px 25px -5px rgba(0, 245, 212, 0.25);
+    }
+    .pulse-glow {
+      animation: pulseGlow 2.5s infinite alternate;
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 10px rgba(0, 245, 212, 0.3); }
+      100% { box-shadow: 0 0 25px rgba(0, 245, 212, 0.8), 0 0 35px rgba(58, 134, 255, 0.5); }
+    }
+    .bot-bounce {
+      animation: botBounce 3s ease-in-out infinite;
+    }
+    @keyframes botBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .badge-unlocked {
+      animation: popBadge 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popBadge {
+      0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b132b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1c2541;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 245, 212, 0.3);
+    }
+    /* Drag & Drop Card effects */
+    .drag-card {
+      touch-action: none;
+      user-select: none;
+      cursor: grab;
+    }
+    .drag-card:active {
+      cursor: grabbing;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-cyan selection:text-brand-dark">
+
+  <!-- TOP NAVIGATION & GAMIFICATION BAR -->
+  <header class="sticky top-0 z-40 glass-card border-b border-cyan-500/20 px-4 py-3 shadow-lg">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Logo & Title -->
+      <button onclick="navTo('home')" class="flex items-center space-x-3 text-left focus:outline-none group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-dark font-black text-xl shadow-md group-hover:scale-105 transition-transform">
+          <i class="fa-solid me-0 fa-database text-slate-950"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
+            DATA HUNTER
+          </h1>
+          <p class="text-xs text-slate-400 hidden sm:block">Fase D / Kelas VII SMP</p>
+        </div>
+      </button>
+
+      <!-- Gamification Stats Pill -->
+      <div class="flex items-center space-x-2 md:space-x-4 bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-700/60 text-xs sm:text-sm">
+        
+        <!-- Hearts -->
+        <div class="flex items-center space-x-1" title="Nyawa Kamu">
+          <span id="heartContainer" class="flex text-rose-500 text-sm sm:text-base space-x-0.5">
+            <i class="fa-solid fa-heart animate-pulse"></i>
+            <i class="fa-solid fa-heart animate-pulse"></i>
+            <i class="fa-solid fa-heart animate-pulse"></i>
+          </span>
+        </div>
+
+        <div class="h-4 w-px bg-slate-700"></div>
+
+        <!-- Points / XP -->
+        <div class="flex items-center space-x-1 font-bold text-amber-400" title="Poin Terkumpul">
+          <i class="fa-solid fa-star text-amber-400"></i>
+          <span id="userPoints">0</span> <span class="text-[10px] text-slate-400 hidden sm:inline">XP</span>
+        </div>
+
+        <div class="h-4 w-px bg-slate-700"></div>
+
+        <!-- Level Badge -->
+        <div class="flex items-center space-x-1 text-cyan-300 font-semibold" title="Level Hunter">
+          <i class="fa-solid fa-shield-halved text-cyan-400"></i>
+          <span id="userLevelName">Lvl 1</span>
+        </div>
+      </div>
+
+      <!-- Quick Nav Controls -->
+      <div class="flex items-center space-x-2">
+        <button onclick="navTo('materi')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-cyan-400 transition" title="Menu Materi">
+          <i class="fa-solid fa-book-open"></i>
+        </button>
+        <button onclick="navTo('misi')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-cyan-400 transition" title="Zona Misi">
+          <i class="fa-solid fa-gamepad"></i>
+        </button>
+        <button onclick="navTo('kelompok')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 hover:text-amber-300 transition" title="Mode Proyektor Kelompok">
+          <i class="fa-solid fa-users"></i>
+        </button>
+        <button onclick="navTo('guru')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-400 hover:text-purple-300 transition" title="Dashboard Guru">
+          <i class="fa-solid fa-chalkboard-user"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER WITH DYNAMIC PAGES -->
+  <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-grow">
+
+    <!-- ==================== HOME / BERANDA PAGE ==================== -->
+    <section id="page-home" class="space-y-8">
+      
+      <!-- Hero Banner -->
+      <div class="glass-card rounded-3xl p-6 sm:p-10 relative overflow-hidden border border-cyan-500/30">
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="grid md:grid-cols-12 gap-8 items-center">
+          
+          <!-- Bot Avatar & Dialogue -->
+          <div class="md:col-span-5 flex flex-col items-center text-center">
+            <div class="relative mb-4">
+              <div class="w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 rounded-full flex items-center justify-center p-1 pulse-glow bot-bounce">
+                <div class="w-full h-full bg-slate-900 rounded-full flex items-center justify-center border-2 border-cyan-300">
+                  <i class="fa-solid fa-robot text-6xl sm:text-7xl text-cyan-400"></i>
+                </div>
+              </div>
+              <span class="absolute bottom-1 right-2 bg-emerald-500 border-2 border-slate-900 w-6 h-6 rounded-full flex items-center justify-center text-[10px] text-white font-bold" title="Status: Aktif">
+                <i class="fa-solid fa-bolt"></i>
+              </span>
+            </div>
+
+            <div class="bg-slate-900/90 border border-cyan-500/40 p-4 rounded-2xl relative shadow-xl text-left max-w-sm">
+              <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-slate-900 border-t border-l border-cyan-500/40 rotate-45"></div>
+              <p class="text-xs font-bold text-cyan-400 mb-1 flex items-center gap-1">
+                <i class="fa-solid fa-headset"></i> DATA-BOT v7.0:
+              </p>
+              <p class="text-xs sm:text-sm text-slate-200 italic leading-relaxed">
+                "Halo, Data Hunter! Kota Data sedang kacau karena data-data tercampur aduk. Maukah kamu membantu menaklukkan dan merapikannya?"
+              </p>
+            </div>
+          </div>
+
+          <!-- Title & Actions -->
+          <div class="md:col-span-7 space-y-6 text-center md:text-left">
+            <div>
+              <span class="inline-block px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase tracking-wider mb-3">
+                <i class="fa-solid fa-graduation-cap mr-1"></i> Media Pembelajaran Interaktif Informatika
+              </span>
+              <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+                DATA HUNTER
+              </h1>
+              <h2 class="text-lg sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 mt-1">
+                “Misi Menaklukkan Dunia Data”
+              </h2>
+              <p class="text-slate-300 text-sm mt-3 leading-relaxed max-w-xl">
+                Pelajari konsep dasar **Data**, bedakan dengan **Informasi**, dan kuasai **Himpunan Data Terstruktur** (Field, Record, Tabel) melalui petualangan 5 Zona Misi interaktif!
+              </p>
+            </div>
+
+            <!-- Quick Info Badges -->
+            <div class="flex flex-wrap gap-2 justify-center md:justify-start text-xs text-slate-300">
+              <span class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-1.5">
+                <i class="fa-regular fa-clock text-cyan-400"></i> Durasi: 2 × 40 Menit
+              </span>
+              <span class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-mobile-screen-button text-blue-400"></i> HP / Laptop / Proyektor
+              </span>
+              <span class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-award text-amber-400"></i> Gamifikasi + Sertifikat
+              </span>
+            </div>
+
+            <!-- Main Launch Buttons -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <button onclick="navTo('misi')" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-sm sm:text-base shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition flex items-center justify-center gap-2 group">
+                <i class="fa-solid fa-rocket text-lg group-hover:animate-bounce"></i>
+                🚀 MULAI MISI SEKARANG
+              </button>
+              
+              <button onclick="navTo('materi')" class="w-full py-3.5 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-sm sm:text-base border border-cyan-500/30 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-book-open text-cyan-400"></i>
+                📖 PELAJARI MATERI
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Quick Menu Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div onclick="navTo('misi')" class="glass-card glass-card-hover p-4 rounded-2xl cursor-pointer text-center space-y-2 group">
+          <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mx-auto text-2xl group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-bullseye"></i>
+          </div>
+          <h3 class="font-bold text-sm text-white">5 Zona Misi</h3>
+          <p class="text-[11px] text-slate-400">Tantangan bertahap & gamifikasi</p>
+        </div>
+
+        <div onclick="navTo('kelompok')" class="glass-card glass-card-hover p-4 rounded-2xl cursor-pointer text-center space-y-2 group">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto text-2xl group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-users-viewfinder"></i>
+          </div>
+          <h3 class="font-bold text-sm text-white">Mode Kelas</h3>
+          <p class="text-[11px] text-slate-400">Tantangan kelompok di proyektor</p>
+        </div>
+
+        <div onclick="navTo('kuis')" class="glass-card glass-card-hover p-4 rounded-2xl cursor-pointer text-center space-y-2 group">
+          <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto text-2xl group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-clipboard-check"></i>
+          </div>
+          <h3 class="font-bold text-sm text-white">Kuis Akhir</h3>
+          <p class="text-[11px] text-slate-400">Evaluasi & cetak sertifikat</p>
+        </div>
+
+        <div onclick="navTo('guru')" class="glass-card glass-card-hover p-4 rounded-2xl cursor-pointer text-center space-y-2 group">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto text-2xl group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+          <h3 class="font-bold text-sm text-white">Dashboard Guru</h3>
+          <p class="text-[11px] text-slate-400">Analisis ketuntasan & leaderboard</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== MATERI LESSON PAGE ==================== -->
+    <section id="page-materi" class="space-y-6 hidden">
+      
+      <!-- Page Header -->
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <h2 class="text-2xl font-black text-white flex items-center gap-2">
+            <i class="fa-solid fa-book-open text-cyan-400"></i> Menu Materi Pembelajaran
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400">Klik kartu untuk mempelajari konsep dasar Informatika dengan interaktif.</p>
+        </div>
+        <button onclick="navTo('misi')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs sm:text-sm hover:opacity-90 transition">
+          🚀 Mulai Misi Game <i class="fa-solid fa-arrow-right ml-1"></i>
+        </button>
+      </div>
+
+      <!-- Flashcard Deck Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Kartu 1: Data -->
+        <div class="glass-card p-6 rounded-2xl space-y-3 border-l-4 border-l-cyan-400 relative overflow-hidden group">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300">Kartu 1</span>
+            <i class="fa-solid fa-database text-cyan-400 text-2xl group-hover:scale-110 transition"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white">📊 DATA</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Data adalah **fakta mentah** atau keterangan yang dikumpulkan untuk dicatat dan diolah. Data belum memiliki arti yang spesifik bagi pengguna.
+          </p>
+          <div class="bg-slate-900/80 p-3 rounded-xl text-xs space-y-1 font-mono text-cyan-200 border border-slate-800">
+            <p><i class="fa-solid fa-check text-emerald-400 mr-1"></i> Nama = "Andi"</p>
+            <p><i class="fa-solid fa-check text-emerald-400 mr-1"></i> Umur = 13 tahun</p>
+            <p><i class="fa-solid fa-check text-emerald-400 mr-1"></i> Nilai = 85</p>
+          </div>
+        </div>
+
+        <!-- Kartu 2: Informasi -->
+        <div class="glass-card p-6 rounded-2xl space-y-3 border-l-4 border-l-amber-400 relative overflow-hidden group">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold px-2.5 py-1 rounded bg-amber-500/20 text-amber-300">Kartu 2</span>
+            <i class="fa-solid fa-lightbulb text-amber-400 text-2xl group-hover:scale-110 transition"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white">💡 INFORMASI</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Informasi adalah **data yang telah diolah** atau diorganisasikan sehingga memberikan makna, arti, atau pengetahuan baru yang berguna.
+          </p>
+          <div class="bg-slate-900/80 p-3 rounded-xl text-xs space-y-1 text-amber-200 border border-slate-800">
+            <p class="text-slate-400 italic">Data mentah: [80, 90, 85, 95]</p>
+            <p class="font-semibold text-amber-300"><i class="fa-solid fa-arrow-right-long mr-1"></i> Informasi: "Nilai Informatika tertinggi adalah 95 yang diperoleh Dinda."</p>
+          </div>
+        </div>
+
+        <!-- Kartu 3: Data Terstruktur -->
+        <div class="glass-card p-6 rounded-2xl space-y-3 border-l-4 border-l-purple-400 relative overflow-hidden group">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold px-2.5 py-1 rounded bg-purple-500/20 text-purple-300">Kartu 3</span>
+            <i class="fa-solid fa-table text-purple-400 text-2xl group-hover:scale-110 transition"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white">🗃️ HIMPUNAN DATA TERSTRUKTUR</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Kumpulan data yang disusun secara teratur dalam baris dan kolom (tabel) sehingga mudah dibaca, dicari, dan diolah oleh komputer maupun manusia.
+          </p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-[11px] text-left text-slate-300 border border-slate-700 rounded-lg overflow-hidden">
+              <thead class="bg-purple-950/60 text-purple-300">
+                <tr><th class="p-1.5">Nama</th><th class="p-1.5">Kelas</th><th class="p-1.5">Nilai</th></tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-900/90">
+                <tr><td class="p-1.5">Andi</td><td class="p-1.5">VII</td><td class="p-1.5">80</td></tr>
+                <tr><td class="p-1.5">Budi</td><td class="p-1.5">VII</td><td class="p-1.5">90</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Kartu 4: Field -->
+        <div class="glass-card p-6 rounded-2xl space-y-3 border-l-4 border-l-blue-400 relative overflow-hidden group">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold px-2.5 py-1 rounded bg-blue-500/20 text-blue-300">Kartu 4</span>
+            <i class="fa-solid fa-table-columns text-blue-400 text-2xl group-hover:scale-110 transition"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white">🧱 FIELD (KOLOM)</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Field adalah **kategori / atribut spesifik** dari data. Dalam tabel, Field ditampilkan secara **Vertikal (Kolom)**.
+          </p>
+          <div class="bg-blue-950/40 border border-blue-500/30 p-2.5 rounded-xl text-xs text-blue-300 flex justify-around font-mono">
+            <span>[ Field 1: Nama ]</span>
+            <span>[ Field 2: Kelas ]</span>
+            <span>[ Field 3: Nilai ]</span>
+          </div>
+        </div>
+
+        <!-- Kartu 5: Record -->
+        <div class="glass-card p-6 rounded-2xl space-y-3 border-l-4 border-l-emerald-400 relative overflow-hidden group md:col-span-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300">Kartu 5</span>
+            <i class="fa-solid fa-list-check text-emerald-400 text-2xl group-hover:scale-110 transition"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white">🧾 RECORD (BARIS)</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Record adalah **satu set kumpulan data lengkap** mengenai satu objek atau individu tertentu. Dalam tabel, Record ditampilkan secara **Horisontal (Baris)**.
+          </p>
+          <div class="bg-emerald-950/40 border border-emerald-500/30 p-3 rounded-xl text-xs text-emerald-300 space-y-1 font-mono">
+            <p>➡️ Record 1: { Nama: "Andi", Kelas: "VII", Umur: 13, Tinggi: 150 }</p>
+            <p>➡️ Record 2: { Nama: "Budi", Kelas: "VII", Umur: 14, Tinggi: 155 }</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Mini Game Mini Test: Mana yang Terstruktur? -->
+      <div class="glass-card p-6 sm:p-8 rounded-3xl border border-amber-500/30 space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold text-xl">
+            🧩
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-white">Mini Game: Mana yang Terstruktur?</h3>
+            <p class="text-xs text-slate-400">Pilihlah format penyajian data yang paling **terstruktur** di bawah ini!</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <!-- Option A -->
+          <div onclick="checkMiniGame('A')" id="minigame-opt-A" class="glass-card p-4 rounded-xl cursor-pointer hover:border-amber-400 transition text-xs font-mono space-y-2 border border-slate-700">
+            <div class="font-bold text-amber-400">Pilihan A (Acak):</div>
+            <p class="text-slate-300">Andi 13 VII 80<br>Budi 14 VII 90<br>Citra 13 VII 85</p>
+          </div>
+
+          <!-- Option B -->
+          <div onclick="checkMiniGame('B')" id="minigame-opt-B" class="glass-card p-4 rounded-xl cursor-pointer hover:border-amber-400 transition text-xs font-mono space-y-2 border border-slate-700">
+            <div class="font-bold text-amber-400">Pilihan B (Terpisah):</div>
+            <p class="text-slate-300">Andi<br>VII<br>80<br>Budi<br>90<br>Citra</p>
+          </div>
+
+          <!-- Option C (Correct) -->
+          <div onclick="checkMiniGame('C')" id="minigame-opt-C" class="glass-card p-4 rounded-xl cursor-pointer hover:border-amber-400 transition text-xs font-mono space-y-2 border border-slate-700">
+            <div class="font-bold text-amber-400">Pilihan C (Tabel Rapi):</div>
+            <table class="w-full text-slate-300 text-[10px] border border-slate-700">
+              <tr class="bg-slate-800"><th class="p-1">Nama</th><th class="p-1">Kelas</th><th class="p-1">Umur</th><th class="p-1">Nilai</th></tr>
+              <tr><td class="p-1">Andi</td><td class="p-1">VII</td><td class="p-1">13</td><td class="p-1">80</td></tr>
+              <tr><td class="p-1">Budi</td><td class="p-1">VII</td><td class="p-1">14</td><td class="p-1">90</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- Feedback Msg -->
+        <div id="minigame-feedback" class="hidden p-4 rounded-xl text-xs sm:text-sm font-semibold transition"></div>
+      </div>
+
+    </section>
+
+    <!-- ==================== ZONA MISI HUB & GAME PAGES ==================== -->
+    <section id="page-misi" class="space-y-6 hidden">
+      
+      <!-- Zone Navigation Tabs -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 overflow-x-auto gap-2">
+        <h2 class="text-xl font-black text-white flex items-center gap-2 whitespace-nowrap">
+          <i class="fa-solid fa-gamepad text-cyan-400"></i> Peta Misi Kota Data
+        </h2>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <button onclick="switchZone(1)" id="zone-btn-1" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-cyan-500 text-slate-950">Zona 1</button>
+          <button onclick="switchZone(2)" id="zone-btn-2" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-400 hover:text-white">Zona 2</button>
+          <button onclick="switchZone(3)" id="zone-btn-3" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-400 hover:text-white">Zona 3</button>
+          <button onclick="switchZone(4)" id="zone-btn-4" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-400 hover:text-white">Zona 4</button>
+          <button onclick="switchZone(5)" id="zone-btn-5" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-400 hover:text-white">Zona 5</button>
+        </div>
+      </div>
+
+      <!-- ZONA 1 CONTAINER -->
+      <div id="zone-container-1" class="glass-card p-6 sm:p-8 rounded-3xl space-y-6 border border-cyan-500/30">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-bold uppercase text-cyan-400 tracking-wider">Misi 1 dari 5</span>
+            <h3 class="text-2xl font-black text-white">🔍 Zona 1 — Kenali Data</h3>
+            <p class="text-xs sm:text-sm text-slate-400">Identifikasi manakah yang merupakan **DATA** sesungguhnya!</p>
+          </div>
+          <button onclick="showClueModal('Data adalah fakta mentah yang dapat dikumpulkan, dicatat, atau diukur tanpa penilaian subjektif.')" class="px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 text-xs font-bold border border-amber-500/40 flex items-center gap-1">
+            <i class="fa-solid fa-lightbulb"></i> Butuh Clue?
+          </button>
+        </div>
+
+        <!-- Case Story -->
+        <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs sm:text-sm">
+          <p class="font-bold text-cyan-400 flex items-center gap-1">
+            <i class="fa-solid fa-clipboard-user"></i> Kasus Lapangan:
+          </p>
+          <p class="text-slate-300 italic">
+            "Tim Data Bot mencatat informasi tentang seorang siswa bernama **Andi**. Manakah dari pernyataan di bawah ini yang paling tepat dikategorikan sebagai **DATA**?"
+          </p>
+        </div>
+
+        <!-- Quiz Options -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button onclick="submitZone1('A')" class="glass-card glass-card-hover p-4 rounded-2xl text-left border border-slate-700 space-y-1">
+            <span class="text-xs font-bold text-cyan-400">Pilihan A</span>
+            <p class="text-sm font-medium text-white">Andi adalah siswa yang sangat rajin.</p>
+          </button>
+          <button onclick="submitZone1('B')" class="glass-card glass-card-hover p-4 rounded-2xl text-left border border-slate-700 space-y-1">
+            <span class="text-xs font-bold text-cyan-400">Pilihan B</span>
+            <p class="text-sm font-medium text-white">Andi berusia 13 tahun.</p>
+          </button>
+          <button onclick="submitZone1('C')" class="glass-card glass-card-hover p-4 rounded-2xl text-left border border-slate-700 space-y-1">
+            <span class="text-xs font-bold text-cyan-400">Pilihan C</span>
+            <p class="text-sm font-medium text-white">Andi kemungkinan besar akan menjadi pemain sepak bola profesional.</p>
+          </button>
+          <button onclick="submitZone1('D')" class="glass-card glass-card-hover p-4 rounded-2xl text-left border border-slate-700 space-y-1">
+            <span class="text-xs font-bold text-cyan-400">Pilihan D</span>
+            <p class="text-sm font-medium text-white">Andi adalah siswa terbaik di sekolah.</p>
+          </button>
+        </div>
+
+        <!-- Feedback Area Zone 1 -->
+        <div id="zone1-feedback" class="hidden p-5 rounded-2xl text-sm font-semibold border space-y-3 transition"></div>
+      </div>
+
+      <!-- ZONA 2 CONTAINER -->
+      <div id="zone-container-2" class="glass-card p-6 sm:p-8 rounded-3xl space-y-6 border border-cyan-500/30 hidden">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-bold uppercase text-cyan-400 tracking-wider">Misi 2 dari 5</span>
+            <h3 class="text-2xl font-black text-white">⚔️ Zona 2 — Data vs Informasi</h3>
+            <p class="text-xs sm:text-sm text-slate-400">Pindahkan kartu ke dalam wadah **🗃️ DATA** atau **💡 INFORMASI** yang tepat!</p>
+          </div>
+          <button onclick="showClueModal('Data: Fakta mentah (angka/kata terpisah). Informasi: Kesimpulan/rangkuman bermakna dari data.')" class="px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/40">
+            <i class="fa-solid fa-lightbulb mr-1"></i> Hint
+          </button>
+        </div>
+
+        <!-- Cards Pool -->
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-slate-400 uppercase">Kartu-Kartu Fakta (Klik kartu untuk memilih wadah):</span>
+          <div id="zone2-cards-pool" class="flex flex-wrap gap-2.5 p-4 bg-slate-900/80 rounded-2xl border border-slate-800 min-h-[90px]">
+            <!-- Dynamic Drag Cards injected via JS -->
+          </div>
+        </div>
+
+        <!-- Drop Targets Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <!-- Bucket DATA -->
+          <div id="bucket-data" class="bg-blue-950/40 border-2 border-dashed border-cyan-500/40 p-5 rounded-2xl space-y-3 min-h-[180px]">
+            <div class="flex items-center justify-between text-cyan-400 font-black">
+              <span class="flex items-center gap-2"><i class="fa-solid fa-box-archive"></i> 🗃️ KELOMPOK DATA</span>
+              <span id="count-bucket-data" class="text-xs bg-cyan-500/20 px-2 py-0.5 rounded">0 kartu</span>
+            </div>
+            <div id="bucket-data-content" class="space-y-2">
+              <!-- Cards placed here -->
+            </div>
+          </div>
+
+          <!-- Bucket INFORMASI -->
+          <div id="bucket-info" class="bg-amber-950/40 border-2 border-dashed border-amber-500/40 p-5 rounded-2xl space-y-3 min-h-[180px]">
+            <div class="flex items-center justify-between text-amber-400 font-black">
+              <span class="flex items-center gap-2"><i class="fa-solid fa-lightbulb"></i> 💡 KELOMPOK INFORMASI</span>
+              <span id="count-bucket-info" class="text-xs bg-amber-500/20 px-2 py-0.5 rounded">0 kartu</span>
+            </div>
+            <div id="bucket-info-content" class="space-y-2">
+              <!-- Cards placed here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Check Button & Feedback -->
+        <div class="flex justify-end gap-3 pt-2">
+          <button onclick="resetZone2()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs hover:bg-slate-700">
+            <i class="fa-solid fa-rotate-left mr-1"></i> Reset Kartu
+          </button>
+          <button onclick="checkZone2()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-extrabold text-sm hover:opacity-90">
+            ✅ Verifikasi Jawaban
+          </button>
+        </div>
+
+        <div id="zone2-feedback" class="hidden p-4 rounded-2xl text-xs sm:text-sm font-semibold border"></div>
+      </div>
+
+      <!-- ZONA 3 CONTAINER -->
+      <div id="zone-container-3" class="glass-card p-6 sm:p-8 rounded-3xl space-y-6 border border-cyan-500/30 hidden">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-bold uppercase text-cyan-400 tracking-wider">Misi 3 dari 5</span>
+            <h3 class="text-2xl font-black text-white">🗂️ Zona 3 — Bangun Tabel Terstruktur</h3>
+            <p class="text-xs sm:text-sm text-slate-400">Pahami konsep **FIELD (Kolom)**, **RECORD (Baris)**, dan **TABEL**!</p>
+          </div>
+          <button onclick="showClueModal('Kolom = Field (atribut). Baris = Record (data 1 siswa). Tabel = Himpunan data lengkap.')" class="px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/40">
+            <i class="fa-solid fa-lightbulb mr-1"></i> Hint
+          </button>
+        </div>
+
+        <!-- Raw Text Data Stream -->
+        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2">
+          <span class="text-xs font-bold text-amber-400 flex items-center gap-1">
+            <i class="fa-solid fa-file-code"></i> Data Acak Tercampur:
+          </span>
+          <p class="font-mono text-xs sm:text-sm text-slate-300 bg-slate-950 p-3 rounded-xl border border-slate-800">
+            "Andi - VII - 13 - 150" | "Budi - VII - 14 - 155" | "Citra - VII - 13 - 148" | "Dinda - VII - 14 - 152"
+          </p>
+        </div>
+
+        <!-- Interactive Highlighter Controls -->
+        <div class="flex flex-wrap gap-2 text-xs">
+          <span class="text-slate-400 font-bold self-center">Klik tombol untuk sorot komponen:</span>
+          <button onclick="highlightTable('field')" class="px-3 py-1.5 rounded-lg bg-blue-500/20 border border-blue-500/40 text-blue-300 font-bold hover:bg-blue-500/40">
+            🧱 Sorot FIELD (Kolom)
+          </button>
+          <button onclick="highlightTable('record')" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold hover:bg-emerald-500/40">
+            🧾 Sorot RECORD (Baris)
+          </button>
+          <button onclick="highlightTable('table')" class="px-3 py-1.5 rounded-lg bg-purple-500/20 border border-purple-500/40 text-purple-300 font-bold hover:bg-purple-500/40">
+            🗃️ Sorot TABEL LENGKAP
+          </button>
+        </div>
+
+        <!-- Constructed Table -->
+        <div class="overflow-x-auto rounded-2xl border border-slate-700 bg-slate-900/90 p-2">
+          <table id="zone3-table" class="w-full text-xs sm:text-sm text-left text-slate-200 transition-all">
+            <thead>
+              <tr id="zone3-thead-row" class="bg-slate-800 text-cyan-300 font-bold border-b border-slate-700 transition">
+                <th class="p-3">Nama</th>
+                <th class="p-3">Kelas</th>
+                <th class="p-3">Umur</th>
+                <th class="p-3">Tinggi (cm)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+              <tr id="row-1" class="hover:bg-slate-800/50 transition"><td class="p-3 font-semibold text-white">Andi</td><td class="p-3">VII</td><td class="p-3">13</td><td class="p-3">150</td></tr>
+              <tr id="row-2" class="hover:bg-slate-800/50 transition"><td class="p-3 font-semibold text-white">Budi</td><td class="p-3">VII</td><td class="p-3">14</td><td class="p-3">155</td></tr>
+              <tr id="row-3" class="hover:bg-slate-800/50 transition"><td class="p-3 font-semibold text-white">Citra</td><td class="p-3">VII</td><td class="p-3">13</td><td class="p-3">148</td></tr>
+              <tr id="row-4" class="hover:bg-slate-800/50 transition"><td class="p-3 font-semibold text-white">Dinda</td><td class="p-3">VII</td><td class="p-3">14</td><td class="p-3">152</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Concept Explainer Box -->
+        <div id="zone3-explainer" class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 text-xs sm:text-sm text-slate-300">
+          <i class="fa-solid fa-circle-info text-cyan-400 mr-1"></i> Klik tombol di atas untuk mempelajari hubungan antara Field, Record, dan Tabel.
+        </div>
+
+        <div class="flex justify-end">
+          <button onclick="finishZone3()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-extrabold text-sm hover:opacity-90">
+            Lanjut Misi Berikutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ZONA 4 CONTAINER -->
+      <div id="zone-container-4" class="glass-card p-6 sm:p-8 rounded-3xl space-y-6 border border-cyan-500/30 hidden">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-bold uppercase text-cyan-400 tracking-wider">Misi 4 dari 5</span>
+            <h3 class="text-2xl font-black text-white">🧠 Zona 4 — Detektif Data</h3>
+            <p class="text-xs sm:text-sm text-slate-400">Analisislah tabel data nilai Informatika siswa di bawah ini untuk menjawab pertanyaan!</p>
+          </div>
+          <button onclick="showClueModal('Perhatikan kolom Nilai Informatika untuk mencari angka tertinggi!')" class="px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/40">
+            <i class="fa-solid fa-lightbulb mr-1"></i> Clue
+          </button>
+        </div>
+
+        <!-- Sample Data Table for Analysis -->
+        <div class="overflow-x-auto rounded-2xl border border-slate-700 bg-slate-900/90 p-2">
+          <table class="w-full text-xs sm:text-sm text-left text-slate-200">
+            <thead class="bg-slate-800 text-cyan-300 font-bold border-b border-slate-700">
+              <tr>
+                <th class="p-2.5">Nama</th>
+                <th class="p-2.5">Umur</th>
+                <th class="p-2.5">Nilai Informatika</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800 font-mono">
+              <tr><td class="p-2.5 font-sans font-semibold text-white">Andi</td><td class="p-2.5">13</td><td class="p-2.5">80</td></tr>
+              <tr><td class="p-2.5 font-sans font-semibold text-white">Budi</td><td class="p-2.5">14</td><td class="p-2.5">90</td></tr>
+              <tr><td class="p-2.5 font-sans font-semibold text-white">Citra</td><td class="p-2.5">13</td><td class="p-2.5">85</td></tr>
+              <tr class="bg-cyan-500/10"><td class="p-2.5 font-sans font-semibold text-cyan-300">Dinda</td><td class="p-2.5">14</td><td class="p-2.5 font-bold text-amber-400">95</td></tr>
+              <tr><td class="p-2.5 font-sans font-semibold text-white">Eko</td><td class="p-2.5">13</td><td class="p-2.5">75</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Sub Questions Carousel/Tabs -->
+        <div id="detective-questions" class="space-y-4">
+          
+          <!-- Q1 -->
+          <div id="det-q1" class="space-y-3">
+            <h4 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 text-xs flex items-center justify-center">1</span>
+              🔎 Misi 1: Siapa yang memperoleh nilai Informatika tertinggi?
+            </h4>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button onclick="answerDetective(1, 'A')" class="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold text-xs text-center border border-slate-700">A. Andi</button>
+              <button onclick="answerDetective(1, 'B')" class="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold text-xs text-center border border-slate-700">B. Budi</button>
+              <button onclick="answerDetective(1, 'C')" class="p-3 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 rounded-xl font-bold text-xs text-cyan-300 text-center">C. Dinda</button>
+              <button onclick="answerDetective(1, 'D')" class="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold text-xs text-center border border-slate-700">D. Eko</button>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div id="det-q2" class="space-y-3 pt-2">
+            <h4 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 text-xs flex items-center justify-center">2</span>
+              🔎 Misi 2: Berapa angka nilai tertinggi dalam tabel tersebut?
+            </h4>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button onclick="answerDetective(2, 'A')" class="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold text-xs text-center border border-slate-700">A. 75</button>
+              <button onclick="answerDetective(2, 'B')" class="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold text-xs text-center border border-slate-700">B. 80</button>
+              <button onclick="answerDetective(2, 'C')" class="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold text-xs text-center border border-slate-700">C. 90</button>
+              <button onclick="answerDetective(2, 'D')" class="p-3 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 rounded-xl font-bold text-xs text-cyan-300 text-center">D. 95</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div id="zone4-feedback" class="hidden p-4 rounded-2xl text-xs sm:text-sm font-semibold border"></div>
+      </div>
+
+      <!-- ZONA 5 CONTAINER -->
+      <div id="zone-container-5" class="glass-card p-6 sm:p-8 rounded-3xl space-y-6 border border-cyan-500/30 hidden">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-bold uppercase text-amber-400 tracking-wider">Tantangan Akhir</span>
+            <h3 class="text-2xl font-black text-white">🚨 Zona 5 — Misi Penaklukkan Data Analyst</h3>
+            <p class="text-xs sm:text-sm text-slate-400">Bantu guru melakukan penyaringan data (filtering) berbasis kriteria!</p>
+          </div>
+        </div>
+
+        <!-- Case Description -->
+        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs sm:text-sm">
+          <p class="font-bold text-amber-400 flex items-center gap-1">
+            <i class="fa-solid fa-filter"></i> Permintaan Misi:
+          </p>
+          <p class="text-slate-200">
+            "Guru ingin mengetahui **siapa saja siswa yang memiliki Nilai Informatika DI ATAS 85** (Nilai > 85)."
+          </p>
+        </div>
+
+        <!-- Interactive Selection Form -->
+        <div class="space-y-3">
+          <span class="text-xs font-bold text-slate-300">Pilihlah semua siswa yang memenuhi kriteria (Bisa lebih dari 1):</span>
+          
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <label class="flex items-center space-x-2 bg-slate-900 p-3 rounded-xl border border-slate-800 cursor-pointer hover:border-cyan-500">
+              <input type="checkbox" id="chk-andi" class="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 bg-slate-800 border-slate-700">
+              <span class="text-xs font-bold text-white">Andi (80)</span>
+            </label>
+
+            <label class="flex items-center space-x-2 bg-slate-900 p-3 rounded-xl border border-slate-800 cursor-pointer hover:border-cyan-500">
+              <input type="checkbox" id="chk-budi" class="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 bg-slate-800 border-slate-700">
+              <span class="text-xs font-bold text-cyan-300">Budi (90)</span>
+            </label>
+
+            <label class="flex items-center space-x-2 bg-slate-900 p-3 rounded-xl border border-slate-800 cursor-pointer hover:border-cyan-500">
+              <input type="checkbox" id="chk-citra" class="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 bg-slate-800 border-slate-700">
+              <span class="text-xs font-bold text-white">Citra (85)</span>
+            </label>
+
+            <label class="flex items-center space-x-2 bg-slate-900 p-3 rounded-xl border border-slate-800 cursor-pointer hover:border-cyan-500">
+              <input type="checkbox" id="chk-dinda" class="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 bg-slate-800 border-slate-700">
+              <span class="text-xs font-bold text-cyan-300">Dinda (95)</span>
+            </label>
+
+            <label class="flex items-center space-x-2 bg-slate-900 p-3 rounded-xl border border-slate-800 cursor-pointer hover:border-cyan-500">
+              <input type="checkbox" id="chk-eko" class="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 bg-slate-800 border-slate-700">
+              <span class="text-xs font-bold text-white">Eko (75)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <button onclick="submitZone5()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black text-sm hover:opacity-90 shadow-lg shadow-amber-500/20">
+            🎯 EKSEKUSI FILTER DATA
+          </button>
+        </div>
+
+        <div id="zone5-feedback" class="hidden p-5 rounded-2xl text-xs sm:text-sm font-semibold border"></div>
+      </div>
+
+    </section>
+
+    <!-- ==================== TANTANGAN KELOMPOK / PROYEKTOR MODE ==================== -->
+    <section id="page-kelompok" class="space-y-6 hidden">
+      
+      <!-- Top Title Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-bold px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+            <i class="fa-solid fa-desktop mr-1"></i> Mode Proyektor Guru & Kelompok
+          </span>
+          <h2 class="text-2xl font-black text-white mt-2 flex items-center gap-2">
+            🏆 Tantangan Kelompok "Kota Data"
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400">Guru dapat menampilkan kompetisi langsung ini di layar proyektor kelas.</p>
+        </div>
+
+        <!-- Timer Control -->
+        <div class="flex items-center space-x-3 bg-slate-900 px-4 py-2 rounded-2xl border border-slate-800">
+          <i class="fa-solid fa-stopwatch text-amber-400 text-xl"></i>
+          <div>
+            <div class="text-[10px] text-slate-400 uppercase font-bold">Timer Diskusi</div>
+            <div id="groupTimer" class="font-mono text-lg font-black text-white">00:45</div>
+          </div>
+          <button onclick="toggleGroupTimer()" id="timerToggleBtn" class="px-3 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400">
+            Start
+          </button>
+        </div>
+      </div>
+
+      <!-- Teams Scoreboards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Tim Algoritma -->
+        <div class="glass-card p-5 rounded-2xl border-t-4 border-t-blue-500 space-y-3 text-center">
+          <div class="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center mx-auto text-xl font-bold">
+            🟦
+          </div>
+          <h3 class="font-black text-base text-white">Tim Algoritma</h3>
+          <div class="text-3xl font-black text-blue-400 font-mono" id="score-team1">90</div>
+          <div class="flex justify-center gap-2 pt-2">
+            <button onclick="changeTeamScore('team1', -5)" class="px-2.5 py-1 rounded bg-slate-800 text-rose-400 hover:bg-slate-700 font-bold text-xs">-5</button>
+            <button onclick="changeTeamScore('team1', +10)" class="px-3 py-1 rounded bg-blue-500/20 text-blue-300 border border-blue-500/40 hover:bg-blue-500/30 font-bold text-xs">+10 Poin</button>
+          </div>
+        </div>
+
+        <!-- Tim Data -->
+        <div class="glass-card p-5 rounded-2xl border-t-4 border-t-emerald-500 space-y-3 text-center">
+          <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto text-xl font-bold">
+            🟩
+          </div>
+          <h3 class="font-black text-base text-white">Tim Data</h3>
+          <div class="text-3xl font-black text-emerald-400 font-mono" id="score-team2">95</div>
+          <div class="flex justify-center gap-2 pt-2">
+            <button onclick="changeTeamScore('team2', -5)" class="px-2.5 py-1 rounded bg-slate-800 text-rose-400 hover:bg-slate-700 font-bold text-xs">-5</button>
+            <button onclick="changeTeamScore('team2', +10)" class="px-3 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 font-bold text-xs">+10 Poin</button>
+          </div>
+        </div>
+
+        <!-- Tim Informasi -->
+        <div class="glass-card p-5 rounded-2xl border-t-4 border-t-amber-500 space-y-3 text-center">
+          <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto text-xl font-bold">
+            🟨
+          </div>
+          <h3 class="font-black text-base text-white">Tim Informasi</h3>
+          <div class="text-3xl font-black text-amber-400 font-mono" id="score-team3">85</div>
+          <div class="flex justify-center gap-2 pt-2">
+            <button onclick="changeTeamScore('team3', -5)" class="px-2.5 py-1 rounded bg-slate-800 text-rose-400 hover:bg-slate-700 font-bold text-xs">-5</button>
+            <button onclick="changeTeamScore('team3', +10)" class="px-3 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-bold text-xs">+10 Poin</button>
+          </div>
+        </div>
+
+        <!-- Tim Digital -->
+        <div class="glass-card p-5 rounded-2xl border-t-4 border-t-rose-500 space-y-3 text-center">
+          <div class="w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto text-xl font-bold">
+            🟥
+          </div>
+          <h3 class="font-black text-base text-white">Tim Digital</h3>
+          <div class="text-3xl font-black text-rose-400 font-mono" id="score-team4">80</div>
+          <div class="flex justify-center gap-2 pt-2">
+            <button onclick="changeTeamScore('team4', -5)" class="px-2.5 py-1 rounded bg-slate-800 text-rose-400 hover:bg-slate-700 font-bold text-xs">-5</button>
+            <button onclick="changeTeamScore('team4', +10)" class="px-3 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 font-bold text-xs">+10 Poin</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live Challenge Prompt for Class Proyektor -->
+      <div class="glass-card p-6 rounded-3xl space-y-4 border border-cyan-500/30">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">Soal Proyektor Kelompok #1</span>
+          <button onclick="nextGroupQuestion()" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-300">
+            Ganti Soal <i class="fa-solid fa-rotate mr-1"></i>
+          </button>
+        </div>
+        <div id="groupQuestionText" class="text-base sm:text-xl font-bold text-white leading-snug">
+          "Manakah yang dimaksud dengan RECORD dalam sebuah tabel data terstruktur?"
+        </div>
+        <div class="text-xs text-slate-400 italic">
+          💡 Setiap kelompok mendiskusikan jawaban selama 45 detik sebelum menunjuk perwakilan kelompok.
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== KUIS AKHIR & CERTIFICATE PAGE ==================== -->
+    <section id="page-kuis" class="space-y-6 hidden">
+      
+      <!-- Quiz Header -->
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <h2 class="text-2xl font-black text-white flex items-center gap-2">
+            <i class="fa-solid fa-clipboard-check text-purple-400"></i> Kuis Evaluasi Akhir
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400">Uji seluruh pemahamanmu dalam 10 soal evaluasi pilihan ganda.</p>
+        </div>
+        <div class="flex items-center space-x-2 text-xs font-bold bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
+          <span>Progress:</span>
+          <span id="quizIndexProgress" class="text-purple-400 font-mono">1 / 10</span>
+        </div>
+      </div>
+
+      <!-- Quiz Body Card -->
+      <div id="quiz-main-card" class="glass-card p-6 sm:p-10 rounded-3xl space-y-6 border border-purple-500/30">
+        
+        <div class="space-y-2">
+          <span id="quizCategoryBadge" class="inline-block px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold border border-purple-500/30">
+            Kategori: Pemahaman Data
+          </span>
+          <h3 id="quizQuestionTitle" class="text-base sm:text-xl font-bold text-white leading-relaxed">
+            Loading Soal...
+          </h3>
+        </div>
+
+        <!-- Options list -->
+        <div id="quizOptionsContainer" class="grid grid-cols-1 gap-3">
+          <!-- Dynamic Buttons injected via JS -->
+        </div>
+
+        <!-- Next / Action Bar -->
+        <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+          <button onclick="resetQuiz()" class="text-xs text-slate-400 hover:text-rose-400 transition">
+            <i class="fa-solid fa-arrows-rotate mr-1"></i> Ulangi Kuis
+          </button>
+          <button id="quizNextBtn" onclick="nextQuizQuestion()" class="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-lg shadow-purple-500/20 transition hidden">
+            Soal Berikutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quiz Result / Certificate Section (Hidden by Default) -->
+      <div id="quiz-result-card" class="glass-card p-6 sm:p-10 rounded-3xl space-y-6 border border-emerald-500/40 hidden text-center">
+        <div class="w-20 h-20 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto text-4xl pulse-glow">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+
+        <div>
+          <h3 class="text-2xl sm:text-4xl font-black text-white">🎉 HASIL BELAJAR KAMU!</h3>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">Selamat! Kamu telah menyelesaikan seluruh evaluasi pembelajaran Data Hunter.</p>
+        </div>
+
+        <!-- Score & Category Badges -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto py-4">
+          <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
+            <div class="text-xs text-slate-400">Skor Akhir</div>
+            <div id="resultScore" class="text-4xl font-black text-emerald-400 font-mono">90/100</div>
+          </div>
+          <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
+            <div class="text-xs text-slate-400">Gelar Hunter</div>
+            <div id="resultTitle" class="text-lg font-bold text-amber-400 mt-2">🏆 DATA ANALYST</div>
+          </div>
+          <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
+            <div class="text-xs text-slate-400">Ketuntasan</div>
+            <div id="resultStatus" class="text-lg font-bold text-cyan-400 mt-2">✅ TUNTAS</div>
+          </div>
+        </div>
+
+        <!-- Mastery Checklists -->
+        <div class="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 text-left max-w-2xl mx-auto space-y-2 text-xs sm:text-sm">
+          <h4 class="font-bold text-white">Kompetensi yang Telah Dikuasai:</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300">
+            <p><i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> Konsep Dasar Data</p>
+            <p><i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> Membedakan Data vs Informasi</p>
+            <p><i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> Himpunan Data Terstruktur</p>
+            <p><i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> Memahami Field dan Record</p>
+            <p><i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> Analisis Data Sederhana</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-4 pt-4">
+          <button onclick="openCertificateModal()" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black text-sm hover:opacity-90 shadow-lg shadow-amber-500/20">
+            🎖️ TAMPILKAN SERTIFIKAT DIGITAL
+          </button>
+          <button onclick="navTo('home')" class="px-6 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm">
+            Kembali ke Beranda
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== DASHBOARD GURU PAGE ==================== -->
+    <section id="page-guru" class="space-y-6 hidden">
+      
+      <!-- Top Title -->
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-bold px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+            <i class="fa-solid fa-chalkboard-user mr-1"></i> Dashboard Pantau Guru
+          </span>
+          <h2 class="text-2xl font-black text-white mt-2">
+            👨‍🏫 Monitoring & Rekapitulasi Pembelajaran Kelas
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400">Ringkasan capaian peserta didik secara real-time untuk evaluasi pembelajaran.</p>
+        </div>
+
+        <button onclick="resetAllAppProgress()" class="px-4 py-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 text-xs font-bold">
+          <i class="fa-solid fa-trash mr-1"></i> Reset Data Kelas
+        </button>
+      </div>
+
+      <!-- Overview Cards Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card p-4 rounded-2xl space-y-1 border-l-4 border-l-cyan-400">
+          <div class="text-xs text-slate-400">Jumlah Peserta Didik</div>
+          <div class="text-2xl font-black text-white font-mono">32 Siswa</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl space-y-1 border-l-4 border-l-emerald-400">
+          <div class="text-xs text-slate-400">Rata-rata Skor Kelas</div>
+          <div class="text-2xl font-black text-emerald-400 font-mono">87.5 / 100</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl space-y-1 border-l-4 border-l-amber-400">
+          <div class="text-xs text-slate-400">Ketuntasan Kelas</div>
+          <div class="text-2xl font-black text-amber-400 font-mono">84.2%</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl space-y-1 border-l-4 border-l-rose-400">
+          <div class="text-xs text-slate-400">Soal Tersulit</div>
+          <div class="text-xs font-bold text-rose-300">Data vs Informasi (48% Benar)</div>
+        </div>
+      </div>
+
+      <!-- Detailed Analytics Table -->
+      <div class="glass-card p-6 rounded-3xl space-y-4 border border-slate-700">
+        <h3 class="font-bold text-base text-white flex items-center gap-2">
+          <i class="fa-solid fa-users text-cyan-400"></i> Rekap Nilai & Progress Peserta Didik
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left text-slate-300">
+            <thead class="bg-slate-900 text-slate-400 uppercase font-bold border-b border-slate-800">
+              <tr>
+                <th class="p-3">Nama Siswa</th>
+                <th class="p-3">Level Hunter</th>
+                <th class="p-3">Skor XP</th>
+                <th class="p-3">Kuis Akhir</th>
+                <th class="p-3">Status Badges</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800 font-mono">
+              <tr class="hover:bg-slate-800/40">
+                <td class="p-3 font-sans font-semibold text-white">APRIANTO</td>
+                <td class="p-3 text-cyan-400">Level 4 (Data Analyst)</td>
+                <td class="p-3 text-amber-400">95 XP</td>
+                <td class="p-3 text-emerald-400 font-bold">90 / 100</td>
+                <td class="p-3 text-xs font-sans">
+                  <span class="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded mr-1">🏅 Master</span>
+                  <span class="bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded">🔎 Detective</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="p-3 font-sans font-semibold text-white">BERNADETTE</td>
+                <td class="p-3 text-cyan-400">Level 3 (Data Hunter)</td>
+                <td class="p-3 text-amber-400">75 XP</td>
+                <td class="p-3 text-emerald-400 font-bold">85 / 100</td>
+                <td class="p-3 text-xs font-sans">
+                  <span class="bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded">🗂️ Organizer</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="p-3 font-sans font-semibold text-white">CANDRA</td>
+                <td class="p-3 text-cyan-400">Level 5 (Data Master)</td>
+                <td class="p-3 text-amber-400">110 XP</td>
+                <td class="p-3 text-emerald-400 font-bold">100 / 100</td>
+                <td class="p-3 text-xs font-sans">
+                  <span class="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded">🧠 Thinker</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="glass-card border-t border-slate-800 py-4 px-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>© 2026 Media Pembelajaran Informatika Kelas VII — Fase D SMP.</p>
+      <p class="flex items-center gap-2">
+        <span>DATA HUNTER v2.5</span>
+        <span>•</span>
+        <span class="text-cyan-400 font-semibold">Berbasis Web & Gamifikasi Interaktif</span>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Clue / Hint Modal -->
+  <div id="modal-clue" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-md w-full p-6 rounded-3xl space-y-4 border border-amber-500/40 animate-pop">
+      <div class="flex items-center justify-between text-amber-400">
+        <h3 class="font-bold text-lg flex items-center gap-2">
+          <i class="fa-solid fa-lightbulb"></i> Petunjuk Misi (Clue)
+        </h3>
+        <button onclick="closeClueModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <p id="modalClueText" class="text-xs sm:text-sm text-slate-200 leading-relaxed bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
+        Clue text here...
+      </p>
+      <button onclick="closeClueModal()" class="w-full py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400">
+        Mengerti, Lanjutkan Misi!
+      </button>
+    </div>
+  </div>
+
+  <!-- Digital Certificate Modal -->
+  <div id="modal-certificate" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+    <div class="max-w-2xl w-full bg-slate-900 p-8 rounded-3xl border-4 border-amber-400/80 text-center space-y-6 relative shadow-2xl my-8">
+      
+      <!-- Seal -->
+      <div class="absolute top-4 right-4 w-16 h-16 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-600 flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg border-2 border-white">
+        🏆
+      </div>
+
+      <div class="space-y-1">
+        <p class="text-xs font-bold text-cyan-400 uppercase tracking-widest">Sertifikat Kelulusan Misi</p>
+        <h2 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500">
+          DATA HUNTER OFFICIAL CERTIFICATE
+        </h2>
+        <p class="text-[11px] text-slate-400">Diberikan sebagai penghargaan atas keberhasilan menyelesaikan seluruh misi Informatika Fase D.</p>
+      </div>
+
+      <div class="py-4 border-y border-slate-800 space-y-2">
+        <p class="text-xs text-slate-400">Diberikan Kepada Data Hunter:</p>
+        <h3 id="certStudentName" class="text-2xl sm:text-3xl font-black text-white underline decoration-cyan-400 decoration-4">
+          APRIANTO
+        </h3>
+        <p class="text-xs text-slate-300 max-w-md mx-auto pt-2">
+          Telah berhasil menaklukkan Kota Data, menguasai konsep Data, Informasi, serta Himpunan Data Terstruktur (Field, Record, Tabel) dengan skor sempurna.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 text-xs font-mono text-left bg-slate-950 p-4 rounded-xl border border-slate-800">
+        <div>
+          <span class="text-slate-500">Skor Kuis Akhir:</span>
+          <p class="font-bold text-emerald-400 text-sm" id="certScore">90 / 100</p>
+        </div>
+        <div>
+          <span class="text-slate-500">Gelar Kelulusan:</span>
+          <p class="font-bold text-amber-400 text-sm" id="certTitle">DATA MASTER</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-3 pt-2">
+        <button onclick="window.print()" class="px-5 py-2.5 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs hover:bg-cyan-400">
+          <i class="fa-solid fa-print mr-1"></i> Cetak Sertifikat
+        </button>
+        <button onclick="closeCertificateModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs hover:bg-slate-700">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    
+    // APP GLOBAL STATE
+    const state = {
+      user: {
+        name: 'APRIANTO',
+        points: 0,
+        hearts: 3,
+        level: 1,
+        badges: []
+      },
+      currentZone: 1,
+      zone2Pool: [
+        { id: 'card1', text: '13 tahun', type: 'DATA' },
+        { id: 'card2', text: '14 tahun', type: 'DATA' },
+        { id: 'card3', text: '150 cm', type: 'DATA' },
+        { id: 'card4', text: '32 kg', type: 'DATA' },
+        { id: 'card5', text: 'Rata-rata tinggi siswa 150 cm', type: 'INFORMASI' },
+        { id: 'card6', text: 'Siswa kelas VII rata-rata berusia 13 tahun', type: 'INFORMASI' }
+      ],
+      zone2DataBucket: [],
+      zone2InfoBucket: [],
+      quizIndex: 0,
+      quizAnswers: {},
+      groupTimerInterval: null,
+      groupTimerSeconds: 45
+    };
+
+    // Quiz Questions Data (10 Questions covering all learning objectives)
+    const quizQuestions = [
+      {
+        cat: 'Konsep Data',
+        q: '1. Manakah pengertian Data yang paling tepat dalam Informatika?',
+        opts: ['A. Kesimpulan dari hasil penelitian', 'B. Fakta mentah atau catatan yang belum diolah', 'C. Laporan resmi dari seorang guru', 'D. Pendapat pribadi seseorang'],
+        ans: 1
+      },
+      {
+        cat: 'Data vs Informasi',
+        q: '2. Apakah perbedaan utama antara Data dan Informasi?',
+        opts: ['A. Data sudah diolah, sedangkan Informasi masih mentah', 'B. Data berbentuk gambar, Informasi berbentuk angka', 'C. Data merupakan fakta mentah, sedangkan Informasi adalah data yang sudah diolah dan bermakna', 'D. Data hanya ada di komputer, Informasi ada di buku'],
+        ans: 2
+      },
+      {
+        cat: 'Contoh Data',
+        q: '3. Di bawah ini yang merupakan contoh DATA mentah adalah...',
+        opts: ['A. Rata-rata nilai ujian matematika kelas VII adalah 85', 'B. Andi (13 tahun), Nilai = 80', 'C. Siswa paling cerdas di kelas adalah Citra', 'D. Sebagian besar siswa menyukai pelajaran olahraga'],
+        ans: 1
+      },
+      {
+        cat: 'Data Terstruktur',
+        q: '4. Apa yang dimaksud dengan Himpunan Data Terstruktur?',
+        opts: ['A. Data yang ditulis acak di kertas', 'B. Data yang disusun secara rapi dalam baris dan kolom (tabel)', 'C. Data berbentuk rekaman suara', 'D. Kumpulan foto tanpa keterangan'],
+        ans: 1
+      },
+      {
+        cat: 'Field (Kolom)',
+        q: '5. Dalam tabel data terstruktur, bagian vertikal yang menunjukkan atribut seperti "Nama", "Kelas", atau "Umur" disebut...',
+        opts: ['A. Record', 'B. Field (Kolom)', 'C. Cell', 'D. Database'],
+        ans: 1
+      },
+      {
+        cat: 'Record (Baris)',
+        q: '6. Satu set kumpulan data lengkap mengenai satu individu (misalnya: Andi, VII, 13 tahun, 150cm) secara horisontal disebut...',
+        opts: ['A. Record (Baris)', 'B. Field', 'C. Title', 'D. Header'],
+        ans: 0
+      },
+      {
+        cat: 'Analisis Data',
+        q: '7. Jika diketahui data nilai: [Andi: 80, Budi: 90, Citra: 85], Manakah yang merupakan INFORMASI hasil olahan data tersebut?',
+        opts: ['A. 80, 90, 85', 'B. Andi, Budi, Citra', 'C. Budi mendapatkan nilai tertinggi yaitu 90', 'D. Nilai anak-anak sangat bagus'],
+        ans: 2
+      },
+      {
+        cat: 'Analisis Data',
+        q: '8. Mengapa data perlu disusun dalam bentuk tabel terstruktur?',
+        opts: ['A. Agar warna tabel menarik', 'B. Agar data mudah dibaca, dicari, dan diolah oleh komputer', 'C. Agar data tidak bisa dihapus', 'D. Supaya jumlah data bertambah banyak'],
+        ans: 1
+      },
+      {
+        cat: 'Data Terstruktur',
+        q: '9. Manakah atribut di bawah ini yang paling cocok menjadi Field dalam tabel data siswa?',
+        opts: ['A. "Nama Siswa", "Tanggal Lahir", "Alamat"', 'B. "Siswa yang rajin dan tidak terlambat"', 'C. "Suasana kelas saat pagi hari"', 'D. "Pemandangan sekolah"'],
+        ans: 0
+      },
+      {
+        cat: 'Evaluasi Pembelajaran',
+        q: '10. Guru menyaring data siswa yang berusia 14 tahun. Tindakan guru tersebut merupakan contoh dari...',
+        opts: ['A. Mengabaikan data', 'B. Pengolahan/Analisis data untuk memperoleh Informasi', 'C. Penghapusan data', 'D. Pembuatan data palsu'],
+        ans: 1
+      }
+    ];
+
+    // Web Audio Synthesizer Sound Engine
+    function playSound(type) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'correct') {
+          osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+          osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.3);
+        } else if (type === 'wrong') {
+          osc.frequency.setValueAtTime(220, ctx.currentTime); // A3
+          osc.frequency.setValueAtTime(180, ctx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.3);
+        } else if (type === 'click') {
+          osc.frequency.setValueAtTime(400, ctx.currentTime);
+          gain.gain.setValueAtTime(0.05, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.05);
+        }
+      } catch (e) {
+        // Audio fallback
+      }
+    }
+
+    
+    // Navigation Routing
+    function navTo(pageId) {
+      playSound('click');
+      const pages = ['home', 'materi', 'misi', 'kelompok', 'kuis', 'guru'];
+      pages.forEach(p => {
+        const el = document.getElementById(`page-${p}`);
+        if (el) el.classList.add('hidden');
+      });
+
+      const target = document.getElementById(`page-${pageId}`);
+      if (target) target.classList.remove('hidden');
+
+      if (pageId === 'misi') switchZone(state.currentZone);
+      if (pageId === 'kuis') renderQuizQuestion();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Points & Hearts Gamification Logic
+    function addPoints(pts) {
+      state.user.points += pts;
+      document.getElementById('userPoints').innerText = state.user.points;
+      updateLevel();
+    }
+
+    function deductHeart() {
+      if (state.user.hearts > 0) {
+        state.user.hearts--;
+        renderHearts();
+      }
+      if (state.user.hearts === 0) {
+        showClueModal('😅 Nyawamu habis! Jangan khawatir, baca petunjuk ini untuk memulihkan nyawa dan melanjutkan petualangan!');
+        state.user.hearts = 3;
+        renderHearts();
+      }
+    }
+
+    function renderHearts() {
+      const container = document.getElementById('heartContainer');
+      let html = '';
+      for (let i = 0; i < 3; i++) {
+        if (i < state.user.hearts) {
+          html += `<i class="fa-solid fa-heart animate-pulse"></i>`;
+        } else {
+          html += `<i class="fa-regular fa-heart text-slate-600"></i>`;
+        }
+      }
+      container.innerHTML = html;
+    }
+
+    function updateLevel() {
+      const p = state.user.points;
+      let lvlName = 'Lvl 1 Pemula';
+      if (p >= 31 && p <= 60) lvlName = 'Lvl 2 Explorer';
+      else if (p >= 61 && p <= 80) lvlName = 'Lvl 3 Hunter';
+      else if (p >= 81 && p <= 100) lvlName = 'Lvl 4 Analyst';
+      else if (p > 100) lvlName = 'Lvl 5 Master';
+      
+      document.getElementById('userLevelName').innerText = lvlName;
+    }
+
+    function showClueModal(text) {
+      playSound('click');
+      document.getElementById('modalClueText').innerText = text;
+      document.getElementById('modal-clue').classList.remove('hidden');
+    }
+
+    function closeClueModal() {
+      playSound('click');
+      document.getElementById('modal-clue').classList.add('hidden');
+    }
+
+    
+    // ZONE SWITCHER
+    function switchZone(zNum) {
+      playSound('click');
+      state.currentZone = zNum;
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.getElementById(`zone-btn-${i}`);
+        const container = document.getElementById(`zone-container-${i}`);
+        if (btn) {
+          if (i === zNum) {
+            btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-cyan-500 text-slate-950';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-400 hover:text-white';
+          }
+        }
+        if (container) {
+          if (i === zNum) container.classList.remove('hidden');
+          else container.classList.add('hidden');
+        }
+      }
+
+      if (zNum === 2) renderZone2Cards();
+    }
+
+    // Zone 1 Logic
+    function submitZone1(choice) {
+      const fb = document.getElementById('zone1-feedback');
+      fb.classList.remove('hidden');
+
+      if (choice === 'B') {
+        playSound('correct');
+        addPoints(10);
+        fb.className = 'p-5 rounded-2xl text-sm font-semibold bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 space-y-2';
+        fb.innerHTML = `
+          <div class="flex items-center gap-2 text-base font-bold"><i class="fa-solid fa-circle-check text-emerald-400"></i> 🎉 BENAR! (+10 ⭐ XP)</div>
+          <p>"13 tahun merupakan DATA karena merupakan fakta mentah yang dapat diukur dan dicatat secara tepat!"</p>
+          <button onclick="switchZone(2)" class="px-4 py-2 bg-emerald-500 text-slate-950 rounded-xl font-bold text-xs mt-2">Lanjut ke Zona 2 <i class="fa-solid fa-arrow-right"></i></button>
+        `;
+      } else {
+        playSound('wrong');
+        deductHeart();
+        fb.className = 'p-5 rounded-2xl text-sm font-semibold bg-rose-950/80 border border-rose-500/50 text-rose-300 space-y-2';
+        fb.innerHTML = `
+          <div class="flex items-center gap-2 text-base font-bold"><i class="fa-solid fa-circle-xmark text-rose-400"></i> ❌ Belum tepat! (-1 ❤️ Nyawa)</div>
+          <p>"Coba perhatikan kembali. Data harus berupa fakta objektif yang dicatat, bukan penilaian atau opini subjektif seperti rajin/terbaik."</p>
+          <button onclick="submitZone1('retry')" class="px-4 py-2 bg-slate-800 text-slate-200 rounded-xl font-bold text-xs mt-2">🔄 Coba Lagi</button>
+        `;
+      }
+    }
+
+    
+    // Zone 2 Logic
+    function renderZone2Cards() {
+      const poolEl = document.getElementById('zone2-cards-pool');
+      poolEl.innerHTML = '';
+      
+      state.zone2Pool.forEach(c => {
+        if (!state.zone2DataBucket.includes(c.id) && !state.zone2InfoBucket.includes(c.id)) {
+          const card = document.createElement('div');
+          card.className = 'drag-card px-3 py-2 bg-slate-800 border border-cyan-500/30 hover:border-cyan-400 rounded-xl text-xs text-white font-medium flex items-center gap-2 shadow';
+          card.innerHTML = `
+            <span>${c.text}</span>
+            <span class="flex gap-1">
+              <button onclick="moveZone2Card('${c.id}', 'DATA')" class="px-1.5 py-0.5 bg-blue-500/30 text-cyan-300 hover:bg-blue-500 rounded text-[10px]" title="Pindahkan ke Data">🗃️</button>
+              <button onclick="moveZone2Card('${c.id}', 'INFO')" class="px-1.5 py-0.5 bg-amber-500/30 text-amber-300 hover:bg-amber-500 rounded text-[10px]" title="Pindahkan ke Informasi">💡</button>
+            </span>
+          `;
+          poolEl.appendChild(card);
+        }
+      });
+
+      // Render buckets content
+      const dataContent = document.getElementById('bucket-data-content');
+      dataContent.innerHTML = state.zone2DataBucket.map(id => {
+        const item = state.zone2Pool.find(x => x.id === id);
+        return `<div class="p-2 bg-blue-900/60 border border-cyan-500/40 rounded-xl text-xs text-cyan-200 flex justify-between items-center">${item.text} <button onclick="removeFromZone2('${id}')" class="text-rose-400 font-bold ml-2">✕</button></div>`;
+      }).join('');
+      document.getElementById('count-bucket-data').innerText = `${state.zone2DataBucket.length} kartu`;
+
+      const infoContent = document.getElementById('bucket-info-content');
+      infoContent.innerHTML = state.zone2InfoBucket.map(id => {
+        const item = state.zone2Pool.find(x => x.id === id);
+        return `<div class="p-2 bg-amber-900/60 border border-amber-500/40 rounded-xl text-xs text-amber-200 flex justify-between items-center">${item.text} <button onclick="removeFromZone2('${id}')" class="text-rose-400 font-bold ml-2">✕</button></div>`;
+      }).join('');
+      document.getElementById('count-bucket-info').innerText = `${state.zone2InfoBucket.length} kartu`;
+    }
+
+    function moveZone2Card(id, target) {
+      playSound('click');
+      if (target === 'DATA') state.zone2DataBucket.push(id);
+      if (target === 'INFO') state.zone2InfoBucket.push(id);
+      renderZone2Cards();
+    }
+
+    function removeFromZone2(id) {
+      playSound('click');
+      state.zone2DataBucket = state.zone2DataBucket.filter(x => x !== id);
+      state.zone2InfoBucket = state.zone2InfoBucket.filter(x => x !== id);
+      renderZone2Cards();
+    }
+
+    function resetZone2() {
+      playSound('click');
+      state.zone2DataBucket = [];
+      state.zone2InfoBucket = [];
+      document.getElementById('zone2-feedback').classList.add('hidden');
+      renderZone2Cards();
+    }
+
+    function checkZone2() {
+      const fb = document.getElementById('zone2-feedback');
+      fb.classList.remove('hidden');
+
+      let allCorrect = true;
+      state.zone2DataBucket.forEach(id => {
+        const item = state.zone2Pool.find(x => x.id === id);
+        if (item.type !== 'DATA') allCorrect = false;
+      });
+      state.zone2InfoBucket.forEach(id => {
+        const item = state.zone2Pool.find(x => x.id === id);
+        if (item.type !== 'INFORMASI') allCorrect = false;
+      });
+
+      const totalPlaced = state.zone2DataBucket.length + state.zone2InfoBucket.length;
+
+      if (allCorrect && totalPlaced === state.zone2Pool.length) {
+        playSound('correct');
+        addPoints(15);
+        fb.className = 'p-4 rounded-2xl bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 text-xs sm:text-sm';
+        fb.innerHTML = `✅ **HEBAT!** Kamu berhasil membedakan fakta mentah (Data) dan hasil olahan bermakna (Informasi)! (+15 ⭐ XP)`;
+      } else {
+        playSound('wrong');
+        deductHeart();
+        fb.className = 'p-4 rounded-2xl bg-rose-950/90 border border-rose-500/50 text-rose-300 text-xs sm:text-sm';
+        fb.innerHTML = `💡 **Petunjuk:** Data merupakan fakta mentah (seperti 13 tahun, 150 cm), sedangkan Informasi adalah data yang sudah dikelompokkan/dirangkum sehingga memiliki makna.`;
+      }
+    }
+
+    
+    // Zone 3 Table Highlight
+    function highlightTable(mode) {
+      playSound('click');
+      const thead = document.getElementById('zone3-thead-row');
+      const rows = [1, 2, 3, 4].map(i => document.getElementById(`row-${i}`));
+      const explainer = document.getElementById('zone3-explainer');
+
+      // Reset styles
+      thead.className = 'bg-slate-800 text-cyan-300 font-bold border-b border-slate-700 transition';
+      rows.forEach(r => r.className = 'hover:bg-slate-800/50 transition');
+
+      if (mode === 'field') {
+        thead.className = 'bg-blue-600 text-white font-extrabold text-base ring-4 ring-blue-400 transition animate-pulse';
+        explainer.innerHTML = `<span class="font-bold text-blue-400">🧱 FIELD (KOLOM):</span> Bagian vertikal seperti "Nama", "Kelas", "Umur", "Tinggi". Field menentukan atribut data yang dicatat!`;
+      } else if (mode === 'record') {
+        rows[0].className = 'bg-emerald-600/60 text-white font-bold ring-4 ring-emerald-400 transition';
+        explainer.innerHTML = `<span class="font-bold text-emerald-400">🧾 RECORD (BARIS):</span> Kumpulan data lengkap untuk 1 individu (Andi - VII - 13th - 150cm) secara horisontal!`;
+      } else if (mode === 'table') {
+        thead.className = 'bg-purple-900 text-purple-200 font-bold';
+        rows.forEach(r => r.className = 'bg-purple-950/40 text-purple-200');
+        explainer.innerHTML = `<span class="font-bold text-purple-400">🗃️ HIMPUNAN DATA TERSTRUKTUR (TABEL):</span> Seluruh gabungan Field dan Record yang tersusun rapi!`;
+      }
+    }
+
+    function finishZone3() {
+      playSound('correct');
+      addPoints(15);
+      switchZone(4);
+    }
+
+    
+    // Zone 4 Detective Quiz
+    function answerDetective(qNum, choice) {
+      const fb = document.getElementById('zone4-feedback');
+      fb.classList.remove('hidden');
+
+      if ((qNum === 1 && choice === 'C') || (qNum === 2 && choice === 'D')) {
+        playSound('correct');
+        addPoints(10);
+        fb.className = 'p-4 rounded-2xl bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 text-xs sm:text-sm';
+        fb.innerHTML = `🔎 **Tepat Sekali!** Dinda memperoleh nilai tertinggi yaitu **95**! (+10 ⭐ XP)`;
+      } else {
+        playSound('wrong');
+        deductHeart();
+        fb.className = 'p-4 rounded-2xl bg-rose-950/90 border border-rose-500/50 text-rose-300 text-xs sm:text-sm';
+        fb.innerHTML = `❌ Perhatikan kembali baris tabel milik Dinda pada kolom Nilai Informatika.`;
+      }
+    }
+
+    // Zone 5 Final Challenge Filter
+    function submitZone5() {
+      const budiChecked = document.getElementById('chk-budi').checked;
+      const dindaChecked = document.getElementById('chk-dinda').checked;
+      const andiChecked = document.getElementById('chk-andi').checked;
+      const citraChecked = document.getElementById('chk-citra').checked;
+      const ekoChecked = document.getElementById('chk-eko').checked;
+
+      const fb = document.getElementById('zone5-feedback');
+      fb.classList.remove('hidden');
+
+      if (budiChecked && dindaChecked && !andiChecked && !citraChecked && !ekoChecked) {
+        playSound('correct');
+        addPoints(30);
+        fb.className = 'p-5 rounded-2xl bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 space-y-3';
+        fb.innerHTML = `
+          <div class="flex items-center gap-2 text-base font-bold"><i class="fa-solid fa-award text-amber-400"></i> 🎯 DATA TERANALISIS! (+30 ⭐ XP)</div>
+          <p>Informasi yang diperoleh: **"Budi (90) dan Dinda (95) memperoleh nilai Informatika di atas 85."**</p>
+          <div class="p-3 bg-amber-500/20 rounded-xl text-amber-300 text-xs font-bold border border-amber-500/40">
+            🏆 SELAMAT! KAMU MEMPEROLEH BADGE: <span class="text-white underline">DATA ANALYST</span>
+          </div>
+          <button onclick="navTo('kuis')" class="px-5 py-2.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black rounded-xl text-xs mt-2">
+            Lanjut Kerjakan Kuis Akhir <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        `;
+      } else {
+        playSound('wrong');
+        deductHeart();
+        fb.className = 'p-4 rounded-2xl bg-rose-950/90 border border-rose-500/50 text-rose-300 text-xs sm:text-sm';
+        fb.innerHTML = `💡 Kriteria: Nilai **DI ATAS 85** (> 85). Angka 85 (Citra) tidak termasuk lebih tinggi dari 85!`;
+      }
+    }
+
+    
+    // Quiz Engine
+    function renderQuizQuestion() {
+      const q = quizQuestions[state.quizIndex];
+      document.getElementById('quizIndexProgress').innerText = `${state.quizIndex + 1} / ${quizQuestions.length}`;
+      document.getElementById('quizCategoryBadge').innerText = `Kategori: ${q.cat}`;
+      document.getElementById('quizQuestionTitle').innerText = q.q;
+
+      const container = document.getElementById('quizOptionsContainer');
+      container.innerHTML = '';
+
+      q.opts.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        const isSelected = state.quizAnswers[state.quizIndex] === idx;
+        btn.className = `w-full p-4 rounded-2xl text-left text-xs sm:text-sm font-medium border transition ${
+          isSelected 
+            ? 'bg-purple-600/40 border-purple-400 text-white font-bold shadow' 
+            : 'bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-200'
+        }`;
+        btn.innerText = opt;
+        btn.onclick = () => {
+          playSound('click');
+          state.quizAnswers[state.quizIndex] = idx;
+          renderQuizQuestion();
+          document.getElementById('quizNextBtn').classList.remove('hidden');
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function nextQuizQuestion() {
+      playSound('click');
+      if (state.quizIndex < quizQuestions.length - 1) {
+        state.quizIndex++;
+        document.getElementById('quizNextBtn').classList.add('hidden');
+        renderQuizQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function resetQuiz() {
+      playSound('click');
+      state.quizIndex = 0;
+      state.quizAnswers = {};
+      document.getElementById('quiz-main-card').classList.remove('hidden');
+      document.getElementById('quiz-result-card').classList.add('hidden');
+      renderQuizQuestion();
+    }
+
+    function finishQuiz() {
+      playSound('correct');
+      let score = 0;
+      quizQuestions.forEach((q, idx) => {
+        if (state.quizAnswers[idx] === q.ans) score += 10;
+      });
+
+      document.getElementById('quiz-main-card').classList.add('hidden');
+      document.getElementById('quiz-result-card').classList.remove('hidden');
+
+      document.getElementById('resultScore').innerText = `${score}/100`;
+      document.getElementById('certScore').innerText = `${score} / 100`;
+
+      let title = '🏅 DATA STARTER';
+      if (score >= 90) title = '🏆 DATA MASTER';
+      else if (score >= 75) title = '🥇 DATA ANALYST';
+
+      document.getElementById('resultTitle').innerText = title;
+      document.getElementById('certTitle').innerText = title;
+    }
+
+    function openCertificateModal() {
+      playSound('click');
+      document.getElementById('modal-certificate').classList.remove('hidden');
+    }
+
+    function closeCertificateModal() {
+      playSound('click');
+      document.getElementById('modal-certificate').classList.add('hidden');
+    }
+
+    
+    // Group Classroom Timer & Leaderboard
+    function toggleGroupTimer() {
+      playSound('click');
+      const btn = document.getElementById('timerToggleBtn');
+      if (state.groupTimerInterval) {
+        clearInterval(state.groupTimerInterval);
+        state.groupTimerInterval = null;
+        btn.innerText = 'Start';
+      } else {
+        btn.innerText = 'Pause';
+        state.groupTimerInterval = setInterval(() => {
+          if (state.groupTimerSeconds > 0) {
+            state.groupTimerSeconds--;
+            const secs = state.groupTimerSeconds < 10 ? `0${state.groupTimerSeconds}` : state.groupTimerSeconds;
+            document.getElementById('groupTimer').innerText = `00:${secs}`;
+          } else {
+            clearInterval(state.groupTimerInterval);
+            state.groupTimerInterval = null;
+            btn.innerText = 'Reset';
+            playSound('wrong');
+            state.groupTimerSeconds = 45;
+          }
+        }, 1000);
+      }
+    }
+
+    function changeTeamScore(teamId, delta) {
+      playSound('click');
+      const el = document.getElementById(`score-${teamId}`);
+      if (el) {
+        let val = parseInt(el.innerText) + delta;
+        if (val < 0) val = 0;
+        el.innerText = val;
+      }
+    }
+
+    function nextGroupQuestion() {
+      playSound('click');
+      const questions = [
+        '"Manakah yang dimaksud dengan RECORD dalam sebuah tabel data terstruktur?"',
+        '"Sebutkan perbedaan utama antara Data dan Informasi secara singkat!"',
+        '"Apakah yang dimaksud dengan FIELD pada sebuah tabel data?"',
+        '"Berikan contoh 1 data mentah dan 1 informasi dalam kehidupan sehari-hari di sekolah!"'
+      ];
+      const rand = questions[Math.floor(Math.random() * questions.length)];
+      document.getElementById('groupQuestionText').innerText = rand;
+      state.groupTimerSeconds = 45;
+      document.getElementById('groupTimer').innerText = '00:45';
+    }
+
+    // Mini Game Materi
+    function checkMiniGame(choice) {
+      const fb = document.getElementById('minigame-feedback');
+      fb.classList.remove('hidden');
+      if (choice === 'C') {
+        playSound('correct');
+        fb.className = 'p-4 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs sm:text-sm font-semibold';
+        fb.innerHTML = `🚀 **Mantap!** Pilihan C adalah data terstruktur karena memiliki Field (kolom) dan Record (baris) yang tersusun rapi!`;
+      } else {
+        playSound('wrong');
+        fb.className = 'p-4 rounded-xl bg-rose-950/80 border border-rose-500/50 text-rose-300 text-xs sm:text-sm font-semibold';
+        fb.innerHTML = `❌ Kurang tepat. Pilihan A dan B masih berantakan. Pilih tabel yang rapi!`;
+      }
+    }
+
+    function resetAllAppProgress() {
+      if (confirm('Apakah guru ingin mereset seluruh progress simulasi kelas?')) {
+        state.user.points = 0;
+        state.user.hearts = 3;
+        document.getElementById('userPoints').innerText = '0';
+        renderHearts();
+        alert('Data berhasil di-reset!');
+      }
+    }
+  </script>
+</body>
+</html>
